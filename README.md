@@ -1,6 +1,6 @@
 # LDC: Learning to Generate Research Ideas with Dynamic Control
 
-Data collection and processing pipeline for **[LDC: Learning to Generate Research Ideas with Dynamic Control](https://github.com/du-nlp-lab/LDC)** (EMNLP 2026, Main Conference).
+Data collection and processing pipeline for **[LDC: Learning to Generate Research Ideas with Dynamic Control](https://github.com/du-nlp-lab/LDC)** (EMNLP 2026).
 
 LDC is a two-stage framework (SFT + controllable RL) for scientific research idea generation. It trains three reward models for **novelty**, **feasibility**, and **effectiveness** on fine-grained feedback derived from real review data, and steers generation at inference time with dimensional controllers coordinated by a sentence-level decoder.
 
