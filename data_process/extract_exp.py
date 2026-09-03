@@ -67,7 +67,6 @@ def extract_experiment_section_with_llama(full_text, error_log_path):
     </>
     Now provide the original text of the experiment section you extracted. Note that you are only allowed to output the extracted original text:
     """
-    print(len(full_text))
     sys_prompt = "You are a specialized assistant for scientific text extraction. Your task is to accurately identify and extract the experiment section from an academic paper. Ensure precise extraction for further analysis."
     llama_thread = LlamaThread(sys_prompt, "llama3.1-70b", 0.01, "extract_experimentSection")
 
@@ -81,7 +80,7 @@ def extract_experiment_section_with_llama(full_text, error_log_path):
 
 # Extract performance metrics with the LLM
 def extract_performance_metrics_with_llama(experiment_text, error_log_path):
-    prompt1 = f""""
+    prompt1 = f"""
     Within the <></> tags below, I have provided the original text of the experiment section extracted from the paper. Your task is to identify and extract the main metric used in the experiment from this text: \n
     <> \n
     {experiment_text}
@@ -189,10 +188,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Process papers, extract experiment sections and performance metrics.")
     parser.add_argument('input_json', type=str, help="Path to the input JSON file containing paper data")
     parser.add_argument('--output_dir', type=str, default="output", help="Directory to save PDFs, text and JSON")
-    parser.add_argument('--save_intermediate', action='store_true', help="Whether to save intermediate txt and section JSON files")
     args = parser.parse_args()
 
     output_dir = args.output_dir
+    os.makedirs(output_dir, exist_ok=True)
     error_log_path = os.path.join(output_dir, 'error_log.txt')
 
     with open(args.input_json, 'r', encoding='utf-8') as f:

@@ -1,6 +1,6 @@
 # LDC: Learning to Generate Research Ideas with Dynamic Control
 
-Data collection and processing pipeline for **[LDC: Learning to Generate Research Ideas with Dynamic Control](https://github.com/du-nlp-lab/LDC)** (EMNLP 2026).
+Data collection and processing pipeline for **[LDC: Learning to Generate Research Ideas with Dynamic Control](https://github.com/du-nlp-lab/LDC)** (EMNLP 2026, Main Conference).
 
 LDC is a two-stage framework (SFT + controllable RL) for scientific research idea generation. It trains three reward models for **novelty**, **feasibility**, and **effectiveness** on fine-grained feedback derived from real review data, and steers generation at inference time with dimensional controllers coordinated by a sentence-level decoder.
 
@@ -23,11 +23,12 @@ OpenReview ──► metadata + reviews ──► PDF section parsing ──► 
 | 1. Crawl reviews | `getData2_iclr2024.py` | Fetches all replies (official reviews, meta-reviews, decisions) for ICLR 2024 submissions (API v2). |
 | 2. Link records | `fillfid.py` | Fills in OpenReview `forum_id`s by fuzzy title matching (`fuzzywuzzy`). |
 | 3. Parse papers | `fillsection.py` | Downloads paper PDFs and extracts *Abstract / Methodology / Experiment* sections with PyMuPDF, using a synonym list for section-title matching. |
-| 4. Extract ideas | `extract_exp.py` | Prompts an LLM (OpenAI-compatible API) to extract the structured research idea (Method + Experiment Plan) from each paper. |
+| 4. Extract ideas | `extract_idea.py` | Prompts the LLM with the paper's title, abstract, and entities to extract the golden research idea (Method + Experiment Plan) used as the SFT target (prompt in Appendix M of the paper). |
+| 4. Extract results | `extract_exp.py` | Extracts the experiment section from the paper PDF, then the main metric, baseline performance, and the proposed method's performance, which feed the effectiveness labels. |
 | 4. Select supporting paper | `select_supporting.py` | Counts in-text author-year citations across the parsed sections, then prompts the LLM with the abstract/introduction and the most-cited candidates (with citation counts) to pick the single most significant supporting paper used as the SFT input; also fills `recent_works` (top-3 cited works since 2023) consumed by novelty scoring. |
-| 5. Score novelty | `novelty_v3.py` | Scores novelty (1–10) with a local HuggingFace LLaMA model, conditioning on the abstract, related works, review comments, and meta-review. (`novelty_v2.py` and `getNovelty.py` are earlier API-based variants kept for reference.) |
-| 5. Score feasibility | `feasibility.py` | Scores feasibility (1–10) from the method/experiment sections and review comments. |
-| 5. Score effectiveness | `eval.py` | Scores feasibility + effectiveness (1–10) from experimental results and review comments. |
+| 5. Score novelty | `novelty_v3.py` | Scores novelty (1–10) with a local HuggingFace LLaMA model, conditioning on the abstract, the top-3 recently cited related works, and the review comments. (`novelty_v2.py` and `getNovelty.py` are earlier variants kept for reference.) |
+| 5. Score feasibility + effectiveness | `eval.py` | Scores feasibility and effectiveness (1–10) from the method/experiment sections and review comments (rubrics in Appendix G). |
+| 5. Score feasibility (legacy) | `feasibility.py` | Earlier standalone feasibility scorer, superseded by `eval.py`; kept for reference. |
 | 6. Repair & clean | `reeval.py`, `reparse.py` | Re-runs examples whose generations failed JSON parsing (with retries) and extracts clean JSON from raw model outputs. |
 
 Scoring rubrics for all three dimensions follow the definitions in Appendix G of the paper; the exact prompts are embedded in each script and listed in Appendices M–P.
@@ -41,7 +42,7 @@ pip install -r requirements.txt
 Before running, fill in the placeholders at the top of the scripts:
 
 - `access_token` / `model_id` — HuggingFace token and model path for local scoring (we use `meta-llama/Meta-Llama-3-70B-Instruct`).
-- `api_key` / `base_url` — API credentials in `extract_exp.py` / `getNovelty.py` for the OpenAI-compatible endpoint.
+- `api_key` / `base_url` — API credentials in `extract_exp.py`, `extract_idea.py`, `select_supporting.py`, and `getNovelty.py` for the OpenAI-compatible endpoint.
 - OpenReview credentials for the crawling scripts, read from environment variables:
   ```bash
   export OPENREVIEW_USERNAME=your_email
@@ -54,6 +55,7 @@ Most scripts share the same CLI:
 python getReview.py    --conference ICLR --year 2023 --download_pdfs --pdf_save_dir papers/
 python fillfid.py      papers.json --output_json papers_with_forum_ids.json --conference ICLR --year 2024
 python fillsection.py  papers.json --output_dir output/ --save_intermediate
+python extract_idea.py papers.json --output_dir output/
 python extract_exp.py  papers.json --output_dir output/
 python select_supporting.py papers.json --output_dir output/ --top_k 10
 python novelty_v3.py   papers.json --output_dir output/
@@ -76,8 +78,11 @@ All source texts are publicly available scientific papers and their official Ope
   title     = {{LDC}: Learning to Generate Research Ideas with Dynamic Control},
   author    = {Li, Ruochen and Jing, Liqiang and Han, Chi and Zhou, Jiawei and Du, Xinya},
   booktitle = {Proceedings of the 2026 Conference on Empirical Methods in
-               Natural Language Processing (EMNLP)},
-  year      = {2026}
+               Natural Language Processing},
+  month     = oct,
+  year      = {2026},
+  address   = {Budapest, Hungary},
+  publisher = {Association for Computational Linguistics}
 }
 ```
 

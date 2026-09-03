@@ -29,10 +29,10 @@ from openai import OpenAI
 import openai
 
 client = OpenAI(
-    api_key="",  # fill in your API key
+    api_key="",
     base_url="https://api.llama-api.com"
 )
-MODEL_NAME = ""  # e.g. "llama3-70b"
+MODEL_NAME = ""
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 

@@ -49,12 +49,12 @@ def update_json_with_forum_ids(json_data, accepted_papers):
     """
     for entry in tqdm(json_data, desc="Updating JSON with forum_ids"):
         json_title = entry.get('title', '')
-        # print(json_title)
         best_match = None
         best_ratio = 0
         for paper in accepted_papers:
             # partial_ratio allows partial matches; threshold set to 80
-            match_ratio = fuzz.partial_ratio(json_title.lower(), paper['title'].get('value','').lower())
+            paper_title = paper['title'].get('value', '') if isinstance(paper['title'], dict) else str(paper['title'])
+            match_ratio = fuzz.partial_ratio(json_title.lower(), paper_title.lower())
             if match_ratio > best_ratio and match_ratio > 80:
                 best_match = paper
                 best_ratio = match_ratio

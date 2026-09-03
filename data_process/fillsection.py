@@ -141,7 +141,6 @@ def match_section_title(section_title, target_synonyms):
             ratio = fuzz.partial_ratio(section_title.lower(), target.lower())
             if ratio > 80:  # similarity threshold
                 matched_sections.append(key)
-                # print(f"Matched title: '{section_title}' with synonym: '{target}' for section: {key} (Ratio: {ratio})")
     return matched_sections if matched_sections else []
 
 # Update the JSON record with the concatenated matched sections
@@ -170,7 +169,6 @@ def update_json_with_sections(json_data, sections):
                 section_content = f"Section: {section['title']}\n{section['content']}\n\n"
                 section_map[key] += section_content
                 added_sections[key].add(section['title'])  # mark as added
-                # print(f"Appending section '{section['title']}' to {key}")
 
     # Write the concatenated contents back to the record
     for key, content in section_map.items():

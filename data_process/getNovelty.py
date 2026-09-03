@@ -104,8 +104,6 @@ def extract_novelty_with_llama(title, abstract, related_work, recent_works, revi
     Now provide your novelty score result and reasoning based on the above given informations in this format: score (number 1-10): reason sentence \n
 </>
     """
-    # print(len(prompt))
-    # print(len(reviews_to_text(reviews)))
     sys_prompt = "You are a specialized assistant for scientific text evaluation. Your task is to evaluate the novelty of scientific papers."
     llama_thread = LlamaThread(sys_prompt, "llama3.1-70b", "novelty_evaluation")
 
@@ -190,6 +188,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     output_dir = args.output_dir
+    os.makedirs(output_dir, exist_ok=True)
     error_log_path = os.path.join(output_dir, 'error_log.txt')
 
     with open(args.input_json, 'r', encoding='utf-8') as f:

@@ -116,7 +116,7 @@ def fix_scores_with_model(papers, output_json_path, error_log_path, max_retries=
         method = content.get('method', 'N/A')
         experiment = content.get('experiment', 'N/A')
         reviews = paper.get('reviews', [])
-        meta_review = paper.get('metareview', 'N/A')
+        meta_review = paper.get('meta_review', 'N/A')
 
         # Check feasibility_score and effectiveness_score
         feasibility_score = paper.get('feasibility_score')

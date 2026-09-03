@@ -34,7 +34,6 @@ def evaluate_paper_with_llama(title, abstract, method, experiment, reviews, meta
         ])
     else:
         reviews_text = reviews
-# MetaReview: <> {meta_review} </> \n
 
     prompt = f"""
 Based on the following information about a scientific paper, please evaluate its feasibility and expected effectiveness:
@@ -192,7 +191,7 @@ def process_papers(papers, output_json_path, error_log_path):
         method = content.get('method', 'N/A')
         experiment = content.get('experiment', 'N/A')
         reviews = paper.get('reviews', [])
-        meta_review = paper.get('metareview', 'N/A')
+        meta_review = paper.get('meta_review', 'N/A')
 
         # Prepare the reviews text
         if isinstance(reviews, list):

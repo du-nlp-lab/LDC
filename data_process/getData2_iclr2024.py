@@ -33,21 +33,16 @@ def get_accepted_forum_ids(submissions, decision_name, venue_id):
         if not replies:
             logging.info(f"No replies found for submission {submission.id}")
         for reply in replies:
-            # Inspect the reply structure
-            # print(f"Reply object: {reply.to_json()}")
 
             # Check whether the invitations list contains the decision name
             if hasattr(reply, 'invitations') and isinstance(reply.invitations, list):
                 for invitation in reply.invitations:
                     suffix = invitation.split('/')[-1]  # part after the last slash
                     if suffix == decision_name:
-                        # print("found ==")
                         # Keep the reply for inspection
                         collected_replies.append(reply.to_json())
                         # Check whether the decision is 'Accept'
-                        print(f"content: {reply.content.get('decision', {}).get('value', '')}; {'Accept' in reply.content.get('decision', {}).get('value', '')}")
                         if 'Accept' in reply.content.get('decision', {}).get('value', ''):
-                            # print("ACCEPT!")
                             forum_ids.add(reply.forum)
                             logging.info(f"Accepted forum {reply.forum}")
             else:
